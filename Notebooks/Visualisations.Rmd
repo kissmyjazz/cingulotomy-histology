@@ -33,7 +33,7 @@ df_glia_f <- df_glia %>% dplyr::filter(Antibody != "NeuN")
 df_GABA_f <- df_GABA %>% dplyr::filter(Antibody != "NeuN")
 ```
 
-**Figure 1**. Proportion of astrocytes to the sum of astrocytes and neurons in different brain regions. The observations are taken from three separate sections for each animal (when possible) and are ordered by median value within each ROI.
+**Figure 1**. Proportion of astrocytes to the sum of astrocytes and neurons in different brain regions. The observations are taken from three separate sections for each animal (when possible) and are ordered by a median value within each ROI.
 ```{r astro-consistency}
 g_astro_c <- ggplot(df_glia %>% dplyr::filter(Antibody == "GFAP"),
                     aes(x = reorder_within(Animal_ID, Prop_nonNeuN_NeuN, ROI, fun = median),
@@ -47,4 +47,44 @@ g_astro_c <- ggplot(df_glia %>% dplyr::filter(Antibody == "GFAP"),
 g_astro_c
 ```
 
+**Figure 2**. Proportion of microglia to the sum of microglia and neurons in different brain regions. The observations are taken from three separate sections for each animal (when possible) and are ordered by a median value within each ROI.
+```{r microglia-consistency}
+g_microglia_c <- ggplot(df_glia %>% dplyr::filter(Antibody == "Iba1"),
+                    aes(x = reorder_within(Animal_ID, Prop_nonNeuN_NeuN, ROI, fun = median),
+                        y = Prop_nonNeuN_NeuN, shape = Slide, 
+                        colour = Treatment)) + geom_point(size = 2) + 
+  scale_x_reordered() +
+  facet_wrap(~ROI, scales = "free_x") +
+  labs(y = "Proportion of microglia to neurons", x = NULL,
+                          shape = "Slide Nr.") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.6))
+g_microglia_c
+```
 
+**Figure 3**. Proportion of GABA-positive cells to the sum of GABA-positive cells and NeuN-positive cells in different brain regions. The observations are taken from three separate sections for each animal (when possible) and are ordered by a median value within each ROI.
+```{r GABA-consistency}
+g_GABA_c <- ggplot(df_GABA %>% dplyr::filter(Antibody == "GABA"),
+                    aes(x = reorder_within(Animal_ID, Prop_nonNeuN_NeuN, ROI, fun = median),
+                        y = Prop_nonNeuN_NeuN, shape = Slide, 
+                        colour = Treatment)) + geom_point(size = 2) + 
+  scale_x_reordered() +
+  facet_wrap(~ROI, scales = "free_x") +
+  labs(y = "Proportion of GABA-positive to NeuN-positive cells", x = NULL,
+                          shape = "Slide Nr.") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.6))
+g_GABA_c
+```
+
+**Figure 4**. Proportion of GAD67-positive cells to the sum of GAD67-positive cells and NeuN-positive cells in different brain regions. The observations are taken from three separate sections for each animal (when possible) and are ordered by a median value within each ROI.
+```{r GAD67-consistency}
+g_gad67_c <- ggplot(df_GABA %>% dplyr::filter(Antibody == "GAD67"),
+                    aes(x = reorder_within(Animal_ID, Prop_nonNeuN_NeuN, ROI, fun = median),
+                        y = Prop_nonNeuN_NeuN, shape = Slide, 
+                        colour = Treatment)) + geom_point(size = 2) + 
+  scale_x_reordered() +
+  facet_wrap(~ROI, scales = "free_x") +
+  labs(y = "Proportion of GAD67-positive to NeuN-positive cells", x = NULL,
+                          shape = "Slide Nr.") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.6))
+g_gad67_c
+```
