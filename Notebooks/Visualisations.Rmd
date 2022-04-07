@@ -1,0 +1,50 @@
+---
+title: "Visualisation of cingulotomy cell counts"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(forcats)
+library(tidytext)
+
+options(scipen=999)
+theme_set(theme_bw(base_size = 14) + theme(legend.position = "top"))
+knitr::opts_chunk$set(echo = FALSE, fig.width = 9, fig.height = 8)
+```
+
+
+```{r load-data}
+path_glia <- here("Data", "Cingulotomy_brains_analysis_NeuN-GFAP-Iba1.csv")
+df_glia <- read_csv(path_glia, col_types = "cddiffffffddddf")
+
+path_GABA <- here("Data", "Cingulotomy_brains_analysis_NeuN-GABA-GAD67.csv")
+df_GABA <- read_csv(path_GABA, col_types = "cddiffffffddddf")
+
+path_wm <- here("Data", "White-matter-measurements.csv")
+df_wm <- read_csv(path_wm, col_types = "cdddffff")
+```
+
+```{r filter-data}
+df_glia_f <- df_glia %>% dplyr::filter(Antibody != "NeuN")
+df_GABA_f <- df_GABA %>% dplyr::filter(Antibody != "NeuN")
+```
+
+**Figure 1**. Proportion of astrocytes to the sum of astrocytes and neurons in different brain regions. The observations are taken from three separate sections for each animal (when possible) and are ordered by median value within each ROI.
+```{r astro-consistency}
+g_astro_c <- ggplot(df_glia %>% dplyr::filter(Antibody == "GFAP"),
+                    aes(x = reorder_within(Animal_ID, Prop_nonNeuN_NeuN, ROI, fun = median),
+                        y = Prop_nonNeuN_NeuN, shape = Slide, 
+                        colour = Treatment)) + geom_point(size = 2) + 
+  scale_x_reordered() +
+  facet_wrap(~ROI, scales = "free_x") +
+  labs(y = "Proportion of astrocytes to neurons", x = NULL,
+                          shape = "Slide Nr.") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.6))
+g_astro_c
+```
+
+
