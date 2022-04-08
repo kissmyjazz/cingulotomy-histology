@@ -1,0 +1,54 @@
+---
+title: "Summary visualisation of cingulotomy cell counts"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(forcats)
+library(tidytext)
+
+options(scipen=999)
+theme_set(theme_bw(base_size = 14) + theme(legend.position = "top"))
+knitr::opts_chunk$set(echo = FALSE, fig.width = 9, fig.height = 8)
+```
+
+```{r load-data}
+path_glia <- here("Data", "Cingulotomy_brains_analysis_NeuN-GFAP-Iba1.rds")
+df_glia <- read_rds(path_glia) %>%
+  dplyr::mutate(Region = ROI)
+
+path_GABA <- here("Data", "Cingulotomy_brains_analysis_NeuN-GABA-GAD67.rds")
+df_GABA <- read_rds(path_GABA) %>%
+  dplyr::mutate(Region = ROI)
+
+path_wm <- here("Data", "White-matter-measurements.rds")
+df_wm <- read_rds(path_wm)
+```
+
+```{r aggregate-ROIs}
+df_glia_r <- df_glia %>% dplyr::select(Animal_ID, Treatment, Region, Antibody, 
+                                       Slide, Section, Num_detections, 
+                                       Area_sq_mm) %>% 
+  dplyr::arrange(Animal_ID, Slide, Section, Region, Antibody) %>% 
+  dplyr::mutate(NeuN_detections = ifelse(Antibody == "NeuN", Num_detections, NA_integer_)) %>% 
+  tidyr::fill(NeuN_detections) %>% 
+  dplyr::mutate(Region = dplyr::recode_factor(Region, 
+                                  Area_24 = "ACC", 
+                                  Area_23 = "ACC", DLPAG = "PAG",
+                                  DMPAG = "PAG", LPAG = "PAG", VLPAG = "PAG",
+                                  Amy_AB = "BAm", Amy_B = "BAm", 
+                                  .default = levels(Region)))
+  
+
+df_GABA_r <- df_GABA %>% dplyr::mutate(Region, dplyr::recode_factor(Region, 
+                                  Area_24 = "ACC", 
+                                  Area_23 = "ACC", DLPAG = "PAG",
+                                  DMPAG = "PAG", LPAG = "PAG", VLPAG = "PAG",
+                                  Amy_AB = "BAm", Amy_B = "BAm", 
+                                  .default = levels(Region)))
+```
+

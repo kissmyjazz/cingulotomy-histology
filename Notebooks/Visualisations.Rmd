@@ -20,12 +20,18 @@ knitr::opts_chunk$set(echo = FALSE, fig.width = 9, fig.height = 8)
 ```{r load-data}
 path_glia <- here("Data", "Cingulotomy_brains_analysis_NeuN-GFAP-Iba1.csv")
 df_glia <- read_csv(path_glia, col_types = "cddiffffffddddf")
+path_glia_rds <- here("Data", "Cingulotomy_brains_analysis_NeuN-GFAP-Iba1.rds")
+write_rds(df_glia, path_glia_rds)
 
 path_GABA <- here("Data", "Cingulotomy_brains_analysis_NeuN-GABA-GAD67.csv")
 df_GABA <- read_csv(path_GABA, col_types = "cddiffffffddddf")
+path_GABA_rds <- here("Data", "Cingulotomy_brains_analysis_NeuN-GABA-GAD67.rds")
+write_rds(df_GABA, path_GABA_rds)
 
 path_wm <- here("Data", "White-matter-measurements.csv")
 df_wm <- read_csv(path_wm, col_types = "cdddffff")
+path_wm_rds <- here("Data", "White-matter-measurements.rds")
+write_rds(df_wm, path_wm_rds)
 ```
 
 ```{r filter-data}
