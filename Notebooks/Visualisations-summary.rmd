@@ -29,26 +29,49 @@ path_wm <- here("Data", "White-matter-measurements.rds")
 df_wm <- read_rds(path_wm)
 ```
 
-```{r aggregate-ROIs}
+```{r aggregate-ROIs-glia}
 df_glia_r <- df_glia %>% dplyr::select(Animal_ID, Treatment, Region, Antibody, 
                                        Slide, Section, Num_detections, 
                                        Area_sq_mm) %>% 
   dplyr::arrange(Animal_ID, Slide, Section, Region, Antibody) %>% 
-  dplyr::mutate(NeuN_detections = ifelse(Antibody == "NeuN", Num_detections, NA_integer_)) %>% 
+  dplyr::mutate(NeuN_detections = ifelse(Antibody == "NeuN", 
+                                         Num_detections, NA_real_)) %>% 
   tidyr::fill(NeuN_detections) %>% 
   dplyr::mutate(Region = dplyr::recode_factor(Region, 
                                   Area_24 = "ACC", 
                                   Area_23 = "ACC", DLPAG = "PAG",
                                   DMPAG = "PAG", LPAG = "PAG", VLPAG = "PAG",
                                   Amy_AB = "BAm", Amy_B = "BAm", 
-                                  .default = levels(Region)))
-  
-
-df_GABA_r <- df_GABA %>% dplyr::mutate(Region, dplyr::recode_factor(Region, 
+                                  .default = levels(Region))) %>% 
+  dplyr::group_by(Animal_ID, Treatment, Region, Antibody) %>% 
+  dplyr::summarise(Cells_per_sq_mm = sum(Num_detections) / sum(Area_sq_mm),
+                   NeuN_detections = first(ifelse(Antibody == "NeuN", 
+                                            sum(NeuN_detections) / sum(Area_sq_mm),
+                                            NA_real_))) %>% 
+  dplyr::arrange(Animal_ID, Region, Antibody) %>% 
+  tidyr::fill(NeuN_detections) %>% ungroup() %>% 
+  dplyr::mutate(Prop_nonNeuN_NeuN = Cells_per_sq_mm / (Cells_per_sq_mm + NeuN_detections))
+```
+```{r aggregate-ROIs-gaba}
+df_GABA_r <- df_GABA %>% dplyr::select(Animal_ID, Treatment, Region, Antibody, 
+                                       Slide, Section, Num_detections, 
+                                       Area_sq_mm) %>% 
+  dplyr::arrange(Animal_ID, Slide, Section, Region, Antibody) %>% 
+  dplyr::mutate(NeuN_detections = ifelse(Antibody == "NeuN", 
+                                         Num_detections, NA_real_)) %>% 
+  tidyr::fill(NeuN_detections) %>% 
+  dplyr::mutate(Region = dplyr::recode_factor(Region, 
                                   Area_24 = "ACC", 
                                   Area_23 = "ACC", DLPAG = "PAG",
                                   DMPAG = "PAG", LPAG = "PAG", VLPAG = "PAG",
                                   Amy_AB = "BAm", Amy_B = "BAm", 
-                                  .default = levels(Region)))
+                                  .default = levels(Region))) %>% 
+  dplyr::group_by(Animal_ID, Treatment, Region, Antibody) %>% 
+  dplyr::summarise(Cells_per_sq_mm = sum(Num_detections) / sum(Area_sq_mm),
+                   NeuN_detections = first(ifelse(Antibody == "NeuN", 
+                                            sum(NeuN_detections) / sum(Area_sq_mm),
+                                            NA_real_))) %>% 
+  dplyr::arrange(Animal_ID, Region, Antibody) %>% 
+  tidyr::fill(NeuN_detections) %>% ungroup() %>% 
+  dplyr::mutate(Prop_nonNeuN_NeuN = Cells_per_sq_mm / (Cells_per_sq_mm + NeuN_detections))
 ```
-
