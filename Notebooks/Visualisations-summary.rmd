@@ -13,7 +13,8 @@ library(tidytext)
 
 options(scipen=999)
 theme_set(theme_bw(base_size = 14) + theme(legend.position = "top"))
-knitr::opts_chunk$set(echo = FALSE, fig.width = 9, fig.height = 8)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, fig.width = 9, 
+                      fig.height = 4)
 ```
 
 ```{r load-data}
@@ -74,4 +75,21 @@ df_GABA_r <- df_GABA %>% dplyr::select(Animal_ID, Treatment, Region, Antibody,
   dplyr::arrange(Animal_ID, Region, Antibody) %>% 
   tidyr::fill(NeuN_detections) %>% ungroup() %>% 
   dplyr::mutate(Prop_nonNeuN_NeuN = Cells_per_sq_mm / (Cells_per_sq_mm + NeuN_detections))
+```
+**Figure 1**. Proportion of astrocytes to the sum of astrocytes and neurons in five brain regions conditioned on Treatment. 
+```{r astro-graph}
+g_astro <- ggplot(df_glia_r %>% dplyr::filter(Antibody == "GFAP"),
+                    aes(x = Treatment,
+                        y = Prop_nonNeuN_NeuN,  colour = Treatment)) + 
+  geom_point(size = 3, position = position_jitter(width = 0.2)) + 
+  stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. - 0.3, 
+                                                             yend = ..y..),
+               color = "black", size = 1.6) +
+  stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. + 0.3, 
+                                                             yend = ..y..),
+               color = "black", size = 1.6) +
+  facet_wrap(~Region, nrow = 1) +
+  labs(y = "Proportion of astrocytes to neurons", x = NULL)
+# theme(axis.text.x = element_text(angle = 45, vjust = 0.6))
+g_astro
 ```
