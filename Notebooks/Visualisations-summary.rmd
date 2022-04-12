@@ -86,13 +86,13 @@ df_GABA_r <- df_GABA %>% dplyr::select(Animal_ID, Treatment, Region, Antibody,
 g_astro <- ggplot(df_glia_r %>% dplyr::filter(Antibody == "GFAP"),
                     aes(x = Treatment,
                         y = Prop_nonNeuN_NeuN,  colour = Treatment)) + 
-  geom_point(size = 3, position = position_jitter(width = 0.2)) + 
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. - 0.3, 
                                                              yend = ..y..),
                color = "black", size = 1.6) +
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. + 0.3, 
                                                              yend = ..y..),
                color = "black", size = 1.6) +
+  geom_point(size = 3, position = position_jitter(width = 0.2)) + 
   facet_wrap(~Region, nrow = 1) +
   labs(y = "Proportion of astrocytes", x = NULL)
 g_astro
@@ -103,13 +103,13 @@ g_astro
 g_microg <- ggplot(df_glia_r %>% dplyr::filter(Antibody == "Iba1"),
                     aes(x = Treatment,
                         y = Prop_nonNeuN_NeuN,  colour = Treatment)) + 
-  geom_point(size = 3, position = position_jitter(width = 0.2)) + 
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. - 0.3, 
                                                              yend = ..y..),
                color = "black", size = 1.6) +
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. + 0.3, 
                                                              yend = ..y..),
                color = "black", size = 1.6) +
+  geom_point(size = 3, position = position_jitter(width = 0.2)) + 
   facet_wrap(~Region, nrow = 1) +
   labs(y = "Proportion of microglia", x = NULL)
 g_microg
@@ -120,13 +120,13 @@ g_microg
 g_GABA <- ggplot(df_GABA_r %>% dplyr::filter(Antibody == "GABA"),
                     aes(x = Treatment,
                         y = Prop_nonNeuN_NeuN,  colour = Treatment)) + 
-  geom_point(size = 3, position = position_jitter(width = 0.2)) + 
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. - 0.3, 
                                                              yend = ..y..),
                color = "black", size = 1.6) +
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. + 0.3, 
                                                              yend = ..y..),
                color = "black", size = 1.6) +
+  geom_point(size = 3, position = position_jitter(width = 0.2)) + 
   facet_wrap(~Region, nrow = 1) +
   labs(y = "Proportion of GABA-positive cells", x = NULL)
 g_GABA
@@ -137,13 +137,13 @@ g_GABA
 g_wm <- ggplot(df_wm,
                     aes(x = Treatment,
                         y = Length_um,  colour = Treatment)) + 
-  geom_point(size = 3, position = position_jitter(width = 0.2)) + 
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. - 0.3, 
                                                              yend = ..y..),
                color = "black", size = 1.6) +
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. + 0.3, 
                                                              yend = ..y..),
                color = "black", size = 1.6) +
+  geom_point(size = 3, position = position_jitter(width = 0.2)) + 
   facet_wrap(~ROI, nrow = 2) +
   labs(y = "Diameter of white matter bundles", x = NULL)
 g_wm
