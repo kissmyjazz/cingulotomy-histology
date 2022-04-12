@@ -52,6 +52,9 @@ df_glia_r <- df_glia %>% dplyr::select(Animal_ID, Treatment, Region, Antibody,
   dplyr::arrange(Animal_ID, Region, Antibody) %>% 
   tidyr::fill(NeuN_detections) %>% ungroup() %>% 
   dplyr::mutate(Prop_nonNeuN_NeuN = Cells_per_sq_mm / (Cells_per_sq_mm + NeuN_detections))
+
+# path_glia_r <- here("Data", "Cingulotomy_brains_analysis_NeuN-GFAP-Iba1_summary.rds")
+# write_rds(df_glia_r, path_glia_r)
 ```
 ```{r aggregate-ROIs-gaba}
 df_GABA_r <- df_GABA %>% dplyr::select(Animal_ID, Treatment, Region, Antibody, 
@@ -75,6 +78,9 @@ df_GABA_r <- df_GABA %>% dplyr::select(Animal_ID, Treatment, Region, Antibody,
   dplyr::arrange(Animal_ID, Region, Antibody) %>% 
   tidyr::fill(NeuN_detections) %>% ungroup() %>% 
   dplyr::mutate(Prop_nonNeuN_NeuN = Cells_per_sq_mm / (Cells_per_sq_mm + NeuN_detections))
+
+# path_GABA_r <- here("Data", "Cingulotomy_brains_analysis_NeuN-GABA-GAD67_summary.rds")
+# write_rds(df_GABA_r, path_GABA_r)
 ```
 **Figure 1**. Proportion of astrocytes to the sum of astrocytes and NeuN-positive cells in five brain regions conditioned on Treatment. 
 ```{r astro-graph}
