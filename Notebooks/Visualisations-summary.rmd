@@ -127,3 +127,19 @@ g_GABA <- ggplot(df_GABA_r %>% dplyr::filter(Antibody == "GABA"),
 g_GABA
 ```
 
+**Figure 4**. Cross-sectional diameters of white matter fibre bundles in six brain regions conditioned on Treatment. 
+```{r wm-graph, fig.height = 6}
+g_wm <- ggplot(df_wm,
+                    aes(x = Treatment,
+                        y = Length_um,  colour = Treatment)) + 
+  geom_point(size = 3, position = position_jitter(width = 0.2)) + 
+  stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. - 0.3, 
+                                                             yend = ..y..),
+               color = "black", size = 1.6) +
+  stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. + 0.3, 
+                                                             yend = ..y..),
+               color = "black", size = 1.6) +
+  facet_wrap(~ROI, nrow = 2) +
+  labs(y = "Diameter of white matter bundles", x = NULL)
+g_wm
+```
