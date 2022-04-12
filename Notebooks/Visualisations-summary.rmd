@@ -76,7 +76,7 @@ df_GABA_r <- df_GABA %>% dplyr::select(Animal_ID, Treatment, Region, Antibody,
   tidyr::fill(NeuN_detections) %>% ungroup() %>% 
   dplyr::mutate(Prop_nonNeuN_NeuN = Cells_per_sq_mm / (Cells_per_sq_mm + NeuN_detections))
 ```
-**Figure 1**. Proportion of astrocytes to the sum of astrocytes and neurons in five brain regions conditioned on Treatment. 
+**Figure 1**. Proportion of astrocytes to the sum of astrocytes and NeuN-positive cells in five brain regions conditioned on Treatment. 
 ```{r astro-graph}
 g_astro <- ggplot(df_glia_r %>% dplyr::filter(Antibody == "GFAP"),
                     aes(x = Treatment,
@@ -89,7 +89,41 @@ g_astro <- ggplot(df_glia_r %>% dplyr::filter(Antibody == "GFAP"),
                                                              yend = ..y..),
                color = "black", size = 1.6) +
   facet_wrap(~Region, nrow = 1) +
-  labs(y = "Proportion of astrocytes to neurons", x = NULL)
-# theme(axis.text.x = element_text(angle = 45, vjust = 0.6))
+  labs(y = "Proportion of astrocytes", x = NULL)
 g_astro
 ```
+
+**Figure 2**. Proportion of microglia to the sum of microglia and NeuN-positive cells in five brain regions conditioned on Treatment. 
+```{r microg-graph}
+g_microg <- ggplot(df_glia_r %>% dplyr::filter(Antibody == "Iba1"),
+                    aes(x = Treatment,
+                        y = Prop_nonNeuN_NeuN,  colour = Treatment)) + 
+  geom_point(size = 3, position = position_jitter(width = 0.2)) + 
+  stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. - 0.3, 
+                                                             yend = ..y..),
+               color = "black", size = 1.6) +
+  stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. + 0.3, 
+                                                             yend = ..y..),
+               color = "black", size = 1.6) +
+  facet_wrap(~Region, nrow = 1) +
+  labs(y = "Proportion of microglia", x = NULL)
+g_microg
+```
+
+**Figure 3**. Proportion of GABA-positive cells to the sum of GABA-positive cells and NeuN-positive cells in five brain regions conditioned on Treatment. 
+```{r gaba-graph}
+g_GABA <- ggplot(df_GABA_r %>% dplyr::filter(Antibody == "GABA"),
+                    aes(x = Treatment,
+                        y = Prop_nonNeuN_NeuN,  colour = Treatment)) + 
+  geom_point(size = 3, position = position_jitter(width = 0.2)) + 
+  stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. - 0.3, 
+                                                             yend = ..y..),
+               color = "black", size = 1.6) +
+  stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. + 0.3, 
+                                                             yend = ..y..),
+               color = "black", size = 1.6) +
+  facet_wrap(~Region, nrow = 1) +
+  labs(y = "Proportion of GABA-positive cells", x = NULL)
+g_GABA
+```
+
