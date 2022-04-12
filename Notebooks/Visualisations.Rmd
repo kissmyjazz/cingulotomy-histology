@@ -1,5 +1,5 @@
 ---
-title: "Visualisation of cingulotomy cell counts"
+title: "Visualisation of cingulotomy cell densities"
 output:
   html_document:
     df_print: paged

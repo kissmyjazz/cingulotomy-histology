@@ -1,5 +1,5 @@
 ---
-title: "Summary visualisation of cingulotomy cell counts"
+title: "Summary visualisation of cingulotomy cell densities"
 output:
   html_document:
     df_print: paged
@@ -9,7 +9,6 @@ output:
 library(tidyverse)
 library(here)
 library(forcats)
-library(tidytext)
 
 options(scipen=999)
 theme_set(theme_bw(base_size = 14) + theme(legend.position = "top"))

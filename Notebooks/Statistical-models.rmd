@@ -1,0 +1,79 @@
+---
+title: "Statistical analysis of cingulotomy cell densities"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(forcats)
+library(broom)
+library(broom.mixed)
+library(glmmTMB)
+library(kableExtra)
+
+options(scipen=999)
+theme_set(theme_bw(base_size = 14) + theme(legend.position = "top"))
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, fig.width = 9, 
+                      fig.height = 4)
+```
+```{r load-data, include=FALSE}
+path_glia <- here("Data", "Cingulotomy_brains_analysis_NeuN-GFAP-Iba1.rds")
+df_glia <- read_rds(path_glia)
+
+path_GABA <- here("Data", "Cingulotomy_brains_analysis_NeuN-GABA-GAD67.rds")
+df_GABA <- read_rds(path_GABA)
+
+path_wm <- here("Data", "White-matter-measurements.rds")
+df_wm <- read_rds(path_wm) %>% dplyr::mutate(Treatment = 
+                                               fct_relevel(Treatment, "control"))
+```
+
+```{r merge-histo-data}
+df_histo <- dplyr::bind_rows(df_glia, df_GABA) %>% 
+  dplyr::filter(Antibody != "NeuN")
+
+```
+
+```{r beta-models, cache = TRUE}
+df_beta_models <- df_histo %>% dplyr::nest_by(Antibody, ROI) %>% 
+  dplyr::rowwise(ROI, Antibody) %>% 
+  dplyr::mutate(model = list(glmmTMB(Prop_nonNeuN_NeuN ~ Treatment + (1|Animal_ID),
+                             data = data, family = beta_family())))
+  
+```
+
+**Table 1** The data were modeled using parametric beta distribution with random effects that usually included three measurements of cell densities for each combination of marmoset, ROI, and antibody. Comparisons in red font were significant at p value level < 0.05. 
+```{r beta-models-summary}
+beta_models_tidy <- df_beta_models %>% summarise(broom.mixed::tidy(model)) %>% 
+  dplyr::filter(term == "Treatmentcingulotomy") %>% 
+  dplyr::select(Antibody, ROI, estimate:p.value) 
+
+beta_models_tbl <- beta_models_tidy %>% kbl() %>% 
+  kable_styling(bootstrap_options = c("striped", "condensed")) %>% 
+  row_spec(which(beta_models_tidy$p.value < 0.05), color = "red")
+
+beta_models_tbl
+```
+
+```{r lm-models, cache = TRUE}
+df_lm_models <- df_wm %>% dplyr::nest_by(ROI) %>% 
+  dplyr::rowwise(ROI) %>% 
+  dplyr::mutate(model = list(lm(Length_um ~ Treatment, data = data)))
+```
+
+
+**Table 2** The data were modeled using parametric normal distribution. There were no significant comparisons at p value level < 0.05. 
+```{r lm-models-summary}
+lm_models_tidy <- df_lm_models %>% summarise(broom::tidy(model)) %>% 
+  dplyr::filter(term == "Treatmentcingulotomy") %>% 
+  dplyr::select(ROI, estimate:p.value) 
+
+lm_models_tbl <- lm_models_tidy %>% kbl() %>% 
+  kable_styling(bootstrap_options = c("striped", "condensed")) %>% 
+  row_spec(which(lm_models_tidy$p.value < 0.05), color = "red")
+
+lm_models_tbl
+```
