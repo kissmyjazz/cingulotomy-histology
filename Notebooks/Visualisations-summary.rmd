@@ -9,11 +9,15 @@ output:
 library(tidyverse)
 library(here)
 library(forcats)
+library(ggdark)
 
 options(scipen=999)
-theme_set(theme_bw(base_size = 14) + theme(legend.position = "top"))
+theme_set(dark_theme_bw(base_size = 14) + theme(legend.position = "top",
+                                                panel.grid = element_blank()))
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, fig.width = 9, 
                       fig.height = 4)
+
+cust_palette <- c("white", "#56B4E9")
 ```
 
 ```{r load-data}
@@ -26,7 +30,12 @@ df_GABA <- read_rds(path_GABA) %>%
   dplyr::mutate(Region = ROI)
 
 path_wm <- here("Data", "White-matter-measurements.rds")
-df_wm <- read_rds(path_wm)
+df_wm <- read_rds(path_wm) %>% dplyr::mutate(Treatment = 
+                                               fct_recode(Treatment, 
+                                                      ACC = "cingulotomy",
+                                                      CON = "control"), 
+                                       Treatment = 
+                                       fct_relevel(Treatment, "CON"))
 ```
 
 ```{r aggregate-ROIs-glia}
@@ -42,7 +51,10 @@ df_glia_r <- df_glia %>% dplyr::select(Animal_ID, Treatment, Region, Antibody,
                                   Area_23 = "ACC", DLPAG = "PAG",
                                   DMPAG = "PAG", LPAG = "PAG", VLPAG = "PAG",
                                   Amy_AB = "BAm", Amy_B = "BAm", 
-                                  .default = levels(Region))) %>% 
+                                  .default = levels(Region)),
+                Treatment = fct_recode(Treatment, 
+                                                 ACC = "cingulotomy",
+                                                 CON = "control")) %>% 
   dplyr::group_by(Animal_ID, Treatment, Region, Antibody) %>% 
   dplyr::summarise(Cells_per_sq_mm = sum(Num_detections) / sum(Area_sq_mm),
                    NeuN_detections = first(ifelse(Antibody == "NeuN", 
@@ -68,7 +80,10 @@ df_GABA_r <- df_GABA %>% dplyr::select(Animal_ID, Treatment, Region, Antibody,
                                   Area_23 = "ACC", DLPAG = "PAG",
                                   DMPAG = "PAG", LPAG = "PAG", VLPAG = "PAG",
                                   Amy_AB = "BAm", Amy_B = "BAm", 
-                                  .default = levels(Region))) %>% 
+                                  .default = levels(Region)),
+                Treatment = fct_recode(Treatment, 
+                                                 ACC = "cingulotomy",
+                                                 CON = "control")) %>% 
   dplyr::group_by(Animal_ID, Treatment, Region, Antibody) %>% 
   dplyr::summarise(Cells_per_sq_mm = sum(Num_detections) / sum(Area_sq_mm),
                    NeuN_detections = first(ifelse(Antibody == "NeuN", 
@@ -88,13 +103,14 @@ g_astro <- ggplot(df_glia_r %>% dplyr::filter(Antibody == "GFAP"),
                         y = Prop_nonNeuN_NeuN,  colour = Treatment)) + 
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. - 0.3, 
                                                              yend = ..y..),
-               color = "black", size = 1.6) +
+               color = "gray60", size = 1.6) +
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. + 0.3, 
                                                              yend = ..y..),
-               color = "black", size = 1.6) +
+               color = "gray60", size = 1.6) +
   geom_point(size = 3, position = position_jitter(width = 0.2)) + 
+  scale_colour_manual(values = cust_palette) +
   facet_wrap(~Region, nrow = 1) +
-  labs(y = "Proportion of astrocytes", x = NULL)
+  labs(y = "Proportion of astrocytes", x = NULL) 
 g_astro
 ```
 
@@ -105,13 +121,14 @@ g_microg <- ggplot(df_glia_r %>% dplyr::filter(Antibody == "Iba1"),
                         y = Prop_nonNeuN_NeuN,  colour = Treatment)) + 
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. - 0.3, 
                                                              yend = ..y..),
-               color = "black", size = 1.6) +
+               color = "gray60", size = 1.6) +
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. + 0.3, 
                                                              yend = ..y..),
-               color = "black", size = 1.6) +
-  geom_point(size = 3, position = position_jitter(width = 0.2)) + 
+               color = "gray60", size = 1.6) +
+  geom_point(size = 3, position = position_jitter(width = 0.2)) +
+  scale_colour_manual(values = cust_palette) +
   facet_wrap(~Region, nrow = 1) +
-  labs(y = "Proportion of microglia", x = NULL)
+  labs(y = "Proportion of microglia", x = NULL) 
 g_microg
 ```
 
@@ -122,11 +139,12 @@ g_GABA <- ggplot(df_GABA_r %>% dplyr::filter(Antibody == "GABA"),
                         y = Prop_nonNeuN_NeuN,  colour = Treatment)) + 
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. - 0.3, 
                                                              yend = ..y..),
-               color = "black", size = 1.6) +
+               color = "gray60", size = 1.6) +
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. + 0.3, 
                                                              yend = ..y..),
-               color = "black", size = 1.6) +
+               color = "gray60", size = 1.6) +
   geom_point(size = 3, position = position_jitter(width = 0.2)) + 
+  scale_colour_manual(values = cust_palette) +
   facet_wrap(~Region, nrow = 1) +
   labs(y = "Proportion of GABA-positive cells", x = NULL)
 g_GABA
@@ -139,11 +157,12 @@ g_wm <- ggplot(df_wm,
                         y = Length_um,  colour = Treatment)) + 
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. - 0.3, 
                                                              yend = ..y..),
-               color = "black", size = 1.6) +
+               color = "gray60", size = 1.6) +
   stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. + 0.3, 
                                                              yend = ..y..),
-               color = "black", size = 1.6) +
+               color = "gray60", size = 1.6) +
   geom_point(size = 3, position = position_jitter(width = 0.2)) + 
+  scale_colour_manual(values = cust_palette) +
   facet_wrap(~ROI, nrow = 2) +
   labs(y = "Diameter of white matter bundles", x = NULL)
 g_wm
