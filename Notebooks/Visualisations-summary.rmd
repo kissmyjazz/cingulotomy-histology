@@ -12,6 +12,7 @@ library(forcats)
 library(ggdark)
 
 options(scipen=999)
+set_here(path='..')
 theme_set(dark_theme_bw(base_size = 14) + theme(legend.position = "top",
                                                 panel.grid = element_blank()))
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, fig.width = 9, 
@@ -112,6 +113,8 @@ g_astro <- ggplot(df_glia_r %>% dplyr::filter(Antibody == "GFAP"),
   facet_wrap(~Region, nrow = 1) +
   labs(y = "Proportion of astrocytes", x = NULL) 
 g_astro
+
+ggsave(file = here("Figures", "astrocytes.eps"))
 ```
 
 **Figure 2**. Proportion of microglia to the sum of microglia and NeuN-positive cells in five brain regions conditioned on Treatment. 
@@ -130,6 +133,7 @@ g_microg <- ggplot(df_glia_r %>% dplyr::filter(Antibody == "Iba1"),
   facet_wrap(~Region, nrow = 1) +
   labs(y = "Proportion of microglia", x = NULL) 
 g_microg
+ggsave(file = here("Figures", "microglia.eps"))
 ```
 
 **Figure 3**. Proportion of GABA-positive cells to the sum of GABA-positive cells and NeuN-positive cells in five brain regions conditioned on Treatment. 
@@ -148,6 +152,7 @@ g_GABA <- ggplot(df_GABA_r %>% dplyr::filter(Antibody == "GABA"),
   facet_wrap(~Region, nrow = 1) +
   labs(y = "Proportion of GABA-positive cells", x = NULL)
 g_GABA
+ggsave(file = here("Figures", "gaba.eps"))
 ```
 
 **Figure 4**. Cross-sectional diameters of white matter fibre bundles in six brain regions conditioned on Treatment. 
@@ -166,4 +171,5 @@ g_wm <- ggplot(df_wm,
   facet_wrap(~ROI, nrow = 2) +
   labs(y = "Diameter of white matter bundles", x = NULL)
 g_wm
+ggsave(file = here("Figures", "white_matter.eps"))
 ```

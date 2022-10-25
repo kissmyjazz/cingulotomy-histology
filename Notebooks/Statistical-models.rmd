@@ -49,7 +49,11 @@ df_beta_models <- df_histo %>% dplyr::nest_by(Antibody, ROI) %>%
 ```{r beta-models-summary}
 beta_models_tidy <- df_beta_models %>% summarise(broom.mixed::tidy(model)) %>% 
   dplyr::filter(term == "Treatmentcingulotomy") %>% 
-  dplyr::select(Antibody, ROI, estimate:p.value) 
+  dplyr::select(Antibody, ROI, estimate:p.value) %>%
+  dplyr::group_by(Antibody) %>% 
+  dplyr::mutate(fdr.p.adjusted = p.adjust(p.value, method = "fdr"),
+                Holm.p.adjusted = p.adjust(p.value, method = "holm"),
+                Bonferroni.p.adjusted = p.adjust(p.value, method = "bonferroni"))
 
 beta_models_tbl <- beta_models_tidy %>% kbl() %>% 
   kable_styling(bootstrap_options = c("striped", "condensed")) %>% 
