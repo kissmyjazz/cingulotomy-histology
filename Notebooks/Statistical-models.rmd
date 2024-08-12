@@ -19,6 +19,7 @@ theme_set(theme_bw(base_size = 14) + theme(legend.position = "top"))
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, fig.width = 9, 
                       fig.height = 4)
 ```
+
 ```{r load-data, include=FALSE}
 path_glia <- here("Data", "Cingulotomy_brains_analysis_NeuN-GFAP-Iba1.rds")
 df_glia <- read_rds(path_glia)
@@ -47,7 +48,7 @@ df_beta_models <- df_histo %>% dplyr::nest_by(Antibody, ROI) %>%
 
 **Table 1** The data were modeled using parametric beta distribution with random effects that usually included three measurements of cell densities for each combination of marmoset, ROI, and antibody. Comparisons in red font were significant at p value level < 0.05. 
 ```{r beta-models-summary}
-beta_models_tidy <- df_beta_models %>% summarise(broom.mixed::tidy(model)) %>% 
+beta_models_tidy <- df_beta_models %>% reframe(broom.mixed::tidy(model)) %>% 
   dplyr::filter(term == "Treatmentcingulotomy") %>% 
   dplyr::select(Antibody, ROI, estimate:p.value) %>%
   dplyr::group_by(Antibody) %>% 
@@ -55,8 +56,8 @@ beta_models_tidy <- df_beta_models %>% summarise(broom.mixed::tidy(model)) %>%
                 Holm.p.adjusted = p.adjust(p.value, method = "holm"),
                 Bonferroni.p.adjusted = p.adjust(p.value, method = "bonferroni"))
 
-beta_models_tbl <- beta_models_tidy %>% kbl() %>% 
-  kable_styling(bootstrap_options = c("striped", "condensed")) %>% 
+beta_models_tbl <- beta_models_tidy %>% kbl() %>%
+  kable_styling(bootstrap_options = c("striped", "condensed")) %>%
   row_spec(which(beta_models_tidy$p.value < 0.05), color = "red")
 
 beta_models_tbl
@@ -71,7 +72,7 @@ df_lm_models <- df_wm %>% dplyr::nest_by(ROI) %>%
 
 **Table 2** The data were modeled using parametric normal distribution. There were no significant comparisons at p value level < 0.05. 
 ```{r lm-models-summary}
-lm_models_tidy <- df_lm_models %>% summarise(broom::tidy(model)) %>% 
+lm_models_tidy <- df_lm_models %>% reframe(broom::tidy(model)) %>% 
   dplyr::filter(term == "Treatmentcingulotomy") %>% 
   dplyr::select(ROI, estimate:p.value) 
 
