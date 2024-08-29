@@ -35,7 +35,7 @@ df <- df_ |> dplyr::mutate(Treatment = dplyr::case_when(str_detect(Image, "Chiom
                                                         str_detect(Image, "Shashi") ~ "CON",
                                                         str_detect(Image, "Taiwo") ~ "CON",
                                                         str_detect(Image, "Yazhu") ~ "ACC",
-                                                        .default = NA), Treatment = factor(Treatment),
+                                                        .default = NA), Treatment = factor(Treatment, levels = c("CON", "ACC")),
                            ID = dplyr::case_when(str_detect(Image, "Chioma") ~ "Chioma",
                                                  str_detect(Image, "Keala") ~ "Keala",
                                                  str_detect(Image, "Lehua") ~ "Lehua",
@@ -65,7 +65,7 @@ df_p <- df_ |> dplyr::mutate(Treatment = dplyr::case_when(str_detect(Image, "Chi
                                                         str_detect(Image, "Shashi") ~ "CON",
                                                         str_detect(Image, "Taiwo") ~ "CON",
                                                         str_detect(Image, "Yazhu") ~ "ACC",
-                                                        .default = NA), Treatment = factor(Treatment),
+                                                        .default = NA), Treatment = factor(Treatment, levels = c("CON", "ACC")),
                            ID = dplyr::case_when(str_detect(Image, "Chioma") ~ "Chioma",
                                                  str_detect(Image, "Keala") ~ "Keala",
                                                  str_detect(Image, "Lehua") ~ "Lehua",
@@ -95,12 +95,12 @@ p_values
 gg_counts <- ggplot(df,
                    aes(x = Treatment,
                        y = Count)) +
-  stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. - 0.3,
-                                                             yend = ..y..),
-               color = "gray10", size = 1.6) +
-  stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = ..x.. + 0.3,
-                                                             yend = ..y..),
-               color = "gray10", size = 1.6) +
+  stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = after_stat(x) - 0.3,
+                                                             yend = after_stat(y)),
+               color = "gray10", linewidth = 1.6) +
+  stat_summary(fun = "mean", geom = "segment", mapping = aes(xend = after_stat(x) + 0.3,
+                                                             yend = after_stat(y)),
+               color = "gray10", linewidth = 1.6) +
   geom_point(aes(colour = Treatment, shape = ID), size = 4, position = position_jitter(width = 0.0)) +
   scale_colour_manual(values = cust_palette) +
   scale_shape_manual(values = c(0:3, 15:18), guide = "none") +
