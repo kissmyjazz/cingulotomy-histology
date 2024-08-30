@@ -103,7 +103,7 @@ gg_counts <- ggplot(df,
                color = "gray10", linewidth = 1.6) +
   geom_point(aes(colour = Treatment, shape = ID), size = 4, position = position_jitter(width = 0.0)) +
   scale_colour_manual(values = cust_palette) +
-  scale_shape_manual(values = c(0:3, 15:18)) +
+  scale_shape_manual(values = c(0:3, 15:18), guide = "none") +
   facet_wrap(~Cell_type, nrow = 1, scales = "free_y") +
   labs(y = "Cell counts", x = NULL)
 
