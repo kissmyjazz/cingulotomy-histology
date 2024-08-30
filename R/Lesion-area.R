@@ -86,7 +86,7 @@ p_values <- df_p %>%
   dplyr::mutate(model = list(glmmTMB(Count ~ Treatment + (1|ID),
                                      data = data))) %>%
   reframe(broom.mixed::tidy(model)) %>%
-  dplyr::filter(term == "TreatmentCON") %>%
+  dplyr::filter(term == "TreatmentACC") %>%
   dplyr::select(p.value) %>%
   dplyr::pull() %>% as.list()
 
@@ -103,7 +103,7 @@ gg_counts <- ggplot(df,
                color = "gray10", linewidth = 1.6) +
   geom_point(aes(colour = Treatment, shape = ID), size = 4, position = position_jitter(width = 0.0)) +
   scale_colour_manual(values = cust_palette) +
-  scale_shape_manual(values = c(0:3, 15:18), guide = "none") +
+  scale_shape_manual(values = c(0:3, 15:18)) +
   facet_wrap(~Cell_type, nrow = 1, scales = "free_y") +
   labs(y = "Cell counts", x = NULL)
 
